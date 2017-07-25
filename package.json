@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "start": "npm-run-all -p sass browser-sync",
+    "sass": "node-sass -w test/style.scss test/style.css",
+    "browser-sync": "browser-sync start -s --startPath=test --files=test/* --no-notify --no-open"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.18.13",
+    "node-sass": "^4.5.3",
+    "npm-run-all": "^4.0.2"
+  }
+}

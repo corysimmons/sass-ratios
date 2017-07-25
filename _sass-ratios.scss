@@ -1,0 +1,143 @@
+// sass-ratios Settings
+$global-ratio: 1.618 !default;
+$global-count: 3 !default;
+$global-no-calc: false !default;
+
+// Vendor package to enable pow() in Sass.
+// https://github.com/strarsis/sass-math-pow
+
+// sass-math-pow
+// pow with non-integer exponents
+// feature detection + polyfill
+
+// indirectly checks for eyeglass-math math-pow() existence
+@function pow-nonint-ok() {
+  // using some well-known input/output
+  $test: math-pow(9, 0.5);
+  // => 3 when pow works correctly with non-integer exponents
+  @return ($test == 3);
+}
+$pow-nonint-ok: pow-nonint-ok(); // cache result to improve performance
+
+//
+// By drtimofey, script based on script by davidkpiano, see these links:
+// https://github.com/thoughtbot/bitters/issues/167
+// https://github.com/thoughtbot/bourbon/issues/717
+// https://gist.github.com/davidkpiano/ad6e6771df050ff3727f
+//
+
+@function math-pow-polyfill($number, $exp) {
+  @if (round($exp) != $exp) {
+    @return math-exp($exp * math-ln($number));
+  }
+
+  // Traditional method for integers
+  $value: 1;
+
+  @if $exp > 0 {
+    @for $i from 1 through $exp {
+      $value: $value * $number;
+    }
+  } @else if $exp < 0 {
+    @for $i from 1 through -$exp {
+      $value: $value / $number;
+    }
+  }
+
+  @return $value;
+}
+
+@function math-factorial($value) {
+  @if $value == 0 {
+    @return 1;
+  }
+
+  $result: 1;
+
+  @for $index from 1 through $value {
+    $result: $result * $index;
+  }
+
+  @return $result;
+}
+
+@function math-summation($iteratee, $input, $initial: 0, $limit: 100) {
+  $sum: 0;
+
+  @for $index from $initial to $limit {
+    $sum: $sum + call($iteratee, $input, $index);
+  }
+
+  @return $sum;
+}
+
+@function math-exp-maclaurin($x, $n) {
+  $result: math-pow-polyfill($x, $n) / math-factorial($n);
+  @return $result;
+}
+@function math-exp($value) {
+  $result: math-summation(math-exp-maclaurin, $value, 0, 100);
+  @return $result;
+}
+
+@function math-ln-maclaurin($x, $n) {
+  $result: (math-pow-polyfill(-1, $n + 1) / $n) * (math-pow-polyfill($x - 1, $n));
+  @return $result;
+}
+
+@function math-ln($value) {
+  $ten-exp: 1;
+  $ln-ten: 2.30258509;
+
+  @while ($value > math-pow-polyfill(10, $ten-exp)) {
+    $ten-exp: $ten-exp + 1;
+  }
+
+  $value: $value / math-pow-polyfill(10, $ten-exp);
+
+  $result: math-summation(math-ln-maclaurin, $value, 1, 100);
+
+  @return $result + $ten-exp * $ln-ten;
+}
+@function poly-pow($Base, $Exponent) {
+  @if ($pow-nonint-ok == false) {
+    @return math-pow-polyfill($Base, $Exponent); // use polyfill pow
+  } @else {
+    @return math-pow($Base, $Exponent); // use eyeglass-math pow
+  }
+}
+
+// sass-ratios
+// Returns a single value from a list of ratio values.
+//
+// $index | 1-based index to get from the list of ratio fractions.
+// $ratio | Whatever ratio you want to use as your base. Check out modularscale.com for fancy ideas.
+// $count | The number of results you're working with, so if you want 4 sizes to work with, you'd set this to 4. It's used to generate the denominator for the returned fraction.
+// $no-calc | By default these will return the fraction without a CSS calc() formula multiplyng the fraction by 100%. This is useful for widths/heights (most common usage), but you can disable this and just get the fraction by setting this to `true`.
+@function ratio($index: 1, $ratio: $global-ratio, $count: $global-count, $no-calc: $global-no-calc) {
+  // Get denominator
+  $denominator: 0;
+  @for $i from 1 through $count {
+    $denominator: $denominator + poly-pow($ratio, $i);
+  }
+
+  // Get numerator and combine for ratio Sass list (like an array)
+  $ratios: ();
+  @for $i from 1 through $count {
+    @if $no-calc == 'false' {
+      $ratios: append(
+        $ratios,
+        unquote(poly-pow($ratio, $i) + '/' + $denominator)
+      );
+    } @else {
+      $ratios: append(
+        $ratios,
+        unquote(
+          'calc(100% * ' + poly-pow($ratio, $i) + '/' + $denominator + ')'
+        )
+      );
+    }
+  }
+
+  @return nth($ratios, $index);
+}

@@ -1,0 +1,33 @@
+@import '../sass-ratios';
+
+section {
+  display: flex;
+
+  $r: 2, 3;
+
+  div {
+    &:nth-child(1) {
+      width: ratio(1, $r...);
+    }
+    &:nth-child(2) {
+      width: ratio(2, $r...);
+      background: rgba(blue, .25);
+    }
+    &:nth-child(3) {
+      width: ratio(3, $r...);
+      background: rgba(blue, .5);
+    }
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: rgba(blue, .05);
+}
+
+:root {
+  font-family: sans-serif;
+  padding: 30px;
+}
