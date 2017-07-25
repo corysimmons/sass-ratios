@@ -1,4 +1,6 @@
 {
+  "name": "sass-ratios",
+  "version": "0.0.1";
   "scripts": {
     "start": "npm-run-all -p sass browser-sync",
     "sass": "node-sass -w test/style.scss test/style.css",
