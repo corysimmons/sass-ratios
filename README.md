@@ -9,7 +9,7 @@ https://alistapart.com/article/content-out-layout to learn more about why we sho
 
 https://codepen.io/corysimmons/pen/XaJMXy
 
-## Examples
+## Example
 
 ```scss
 // in.scss
