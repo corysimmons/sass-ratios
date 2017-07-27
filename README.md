@@ -1,14 +1,47 @@
 # sass-ratios
 Sass function to generate ratio sizes.
 
-Just grab the contents of [_sass-ratios.scss](_sass-ratios.scss) and it in your project somewhere.
+Just grab the contents of [_sass-ratios.scss](_sass-ratios.scss) and `@import` it into your project somewhere.
 
-https://alistapart.com/article/content-out-layout to learn more about this style.s
+https://alistapart.com/article/content-out-layout to learn more about why we should be using ratios in web-design.
 
-## API
+## Demo
+
+https://codepen.io/corysimmons/pen/XaJMXy
+
+## Examples
 
 ```scss
-// sass-ratios
+// in.scss
+.small-ratio {
+  width: ratio(2, 1.5, 2);
+}
+
+.large-ratio {
+  width: ratio(1, 1.5, 2);
+}
+```
+
+```scss
+// out.css
+.small-ratio {
+  width: calc(100% * 1.5/3.75);
+}
+
+.large-ratio {
+  width: calc(100% * 2.25/3.75);
+}
+```
+
+## Params/API
+
+```scss
+// @function ratio(
+//   $index: 1,
+//   $ratio: 1.618,
+//   $count: 3,
+//   $no-calc: null)
+//
 // Returns a single value from a list of ratio values.
 //
 // $index | 1-based index to get from the list of ratio fractions.
