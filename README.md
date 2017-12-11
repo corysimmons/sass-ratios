@@ -1,4 +1,6 @@
 # sass-ratios
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/corysimmons/sass-ratios.svg)](https://greenkeeper.io/)
 Sass function to generate ratio sizes.
 
 Just grab the contents of [_sass-ratios.scss](_sass-ratios.scss) and `@import` it into your project somewhere.
